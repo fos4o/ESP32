@@ -74,8 +74,20 @@ void DACOutput::start(SampleSource* sample_generator)
     Serial.print("freq: ");
     Serial.println(frequency);
 
-    m_size = 64;
-    if (frequency < 5000) 
+    m_size = 8;
+    /*if (frequency < 350)
+    {
+        m_size = 512;
+    }
+    else */if (frequency < 640)
+    {
+        m_size = 256;
+    }
+    else if (frequency < 1500)
+    {
+        m_size = 128;
+    }
+    else if (frequency < 5000)
     {
         m_size = 64;
     }
@@ -106,12 +118,14 @@ void DACOutput::start(SampleSource* sample_generator)
         m_rate = 650000;
     }
 
+    //m_rate = 15200;
+
     Serial.print("rate: ");
     Serial.println(m_rate);
 
     frequency = m_rate / m_size;
 
-    m_size *= 2;
+    //m_size *= 2;
 
 
     Serial.print("freq2: ");
@@ -129,15 +143,18 @@ void DACOutput::start(SampleSource* sample_generator)
         .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
         .communication_format = I2S_COMM_FORMAT_STAND_MSB,
         .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
-        .dma_buf_count = 4,
-        .dma_buf_len = m_size
+        .dma_buf_count = 2,
+        .dma_buf_len = m_size * 2,
+        .tx_desc_auto_clear = true
     };
     
     //Serial.println(i2sConfig.sample_rate); 
     //install and start i2s driver
-    esp_err_t err = i2s_driver_install(I2S_NUM_0, &i2sConfig, 4, &m_i2sQueue);
+    esp_err_t err = i2s_driver_install(I2S_NUM_0, &i2sConfig, 2, &m_i2sQueue);
     //Serial.println(err);
     ESP_ERROR_CHECK(i2s_set_sample_rates(I2S_NUM_0, m_rate));
+
+    //ESP_ERROR_CHECK(i2s_set_clk(0, 8000, 16, I2S_CHANNEL_STEREO));
     // enable the DAC channels
     i2s_set_dac_mode(I2S_DAC_CHANNEL_BOTH_EN);
     //Serial.println(err);

@@ -3,7 +3,7 @@
 
 SinWave::SinWave()
 {
-	m_freq = 900;
+	m_freq = 1000;
 	m_dataSize = 0;
 	dataSin = NULL;
 	dataCos = NULL;
@@ -20,7 +20,7 @@ SinWave::~SinWave()
 
 void SinWave::initData(uint32_t size)
 {
-	m_dataSize = size;
+	m_dataSize = size * 2;
 	dataSin = new uint16_t[m_dataSize];
 	dataCos = new uint16_t[m_dataSize];
 
